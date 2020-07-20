@@ -75,7 +75,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         {
             super(itemView);
 
-            imageView = itemView.findViewById(R.id.imageView2);
+//            imageView = itemView.findViewById(R.id.imageView2);
             name = itemView.findViewById(R.id.name);
             number = itemView.findViewById(R.id.number);
 

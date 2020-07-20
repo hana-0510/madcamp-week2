@@ -17,7 +17,14 @@
     <string name="your_name">Full Name</string>
     <string name="no_account">No account yet? Create one</string>
     <string name="go_login">Already a member? Login</string>
+    <string name="no_contact"> Nothing to Get </string>
+
+
+    <string name="add_button">Add</string>
+    <string name="name">Name</string>
+    <string name="back_to_contacts">Go back to contacts</string>
+
+    <string name="phone_num">Phone Number</string>
 
 
 </resources>
-

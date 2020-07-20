@@ -2,17 +2,12 @@ package com.example.secondproject;
 
 public class User {
 
-    private int id;
-    private String username, email;
+    private String username, email, password;
 
-    public User(int id, String username, String email) {
-        this.id = id;
+    public User(String username, String email, String password) {
         this.username = username;
         this.email = email;
-    }
-
-    public int getId() {
-        return id;
+        this.password = password;
     }
 
     public String getUsername() {
@@ -21,6 +16,10 @@ public class User {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
 }

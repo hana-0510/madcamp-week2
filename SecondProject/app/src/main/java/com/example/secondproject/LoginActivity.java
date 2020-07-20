@@ -102,45 +102,32 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(final String s) {
                 super.onPostExecute(s);
-                new android.os.Handler().postDelayed(
-                    new Runnable() {
-                        public void run() {
-                            // On complete call either onLoginSuccess or onLoginFailed
-                            if (s.equals("1")) {
-                                onLoginSuccess();
-                            }else { onLoginFailed(); }
-                            progressDialog.dismiss();
-                        }
-                }, 2500);
-//
-//                try {
-//                    //converting response to json object
-//                    JSONObject obj = new JSONObject(s);
-//
-//                    //if no error in response
+                try {
+                    //converting response to json object
+                    JSONObject obj = new JSONObject(s);
+                    //if no error in response
 //                    if (!obj.getBoolean("error")) {
-//                        Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
-//
-//                        //getting the user from the response
+                    //getting the user from the response
 //                        JSONObject userJson = obj.getJSONObject("user");
-//
-//                        //creating a new user object
-//                        User user = new User(userJson.getInt("id"), userJson.getString("username"), userJson.getString("email"));
-//                        SharedPrefManager.getInstance(getApplicationContext()).userLogin(user);
-//
-////                        progressDialog.dismiss();
-//                        onLoginSuccess();
+                    //creating a new user object
+                    User user = new User(
+                            obj.getString("username"),
+                            obj.getString("id"),
+                            obj.getString("password")
+                    );
+                    if(obj.getInt("result")==1) {
+                        onLoginSuccess();
+                    } else { onLoginFailed(); }
+                    //storing the user in shared preferences
+                    SharedPrefManager.getInstance(getApplicationContext()).userLogin(user);
+                    progressDialog.dismiss();
 //                    } else {
-//                        Toast.makeText(getApplicationContext(), "Invalid username or password", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getApplicationContext(), "Some error occurred", Toast.LENGTH_SHORT).show();
 //                    }
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//                if (s.equals("1")) {
-//                    onLoginSuccess();
-//                }else { onLoginFailed(); }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-
         }
         UserLogin ul = new UserLogin();
         ul.execute();

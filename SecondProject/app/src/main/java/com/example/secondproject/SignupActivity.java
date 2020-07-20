@@ -94,6 +94,7 @@ public class SignupActivity extends AppCompatActivity {
             }
 
             final ProgressDialog progressDialog = new ProgressDialog(SignupActivity.this);
+
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
@@ -102,25 +103,56 @@ public class SignupActivity extends AppCompatActivity {
                 progressDialog.setMessage("Creating Account...");
                 progressDialog.show();
             }
+
             @Override
             protected void onPostExecute(final String s) {
                 super.onPostExecute(s);
+//                try {
+//                    //converting response to json object
+//                    JSONObject obj = new JSONObject(s);
+//                    //if no error in response
+//                    if (!obj.getBoolean("error")) {
+//                        //getting the user from the response
+////                        JSONObject userJson = obj.getJSONObject("user");
+//                        //creating a new user object
+//                        User user = new User(
+//                                obj.getString("username"),
+//                                obj.getString("email"),
+//                                obj.getString("password")
+//                        );
+//                        if(obj.getInt("result")==1) {
+//                            onSignupSuccess();
+//                        } else { onSignupFailed(); }
+//                        //storing the user in shared preferences
+//                        SharedPrefManager.getInstance(getApplicationContext()).userLogin(user);
+//                        progressDialog.dismiss();
+//                    } else {
+//                        Toast.makeText(getApplicationContext(), "Some error occurred", Toast.LENGTH_SHORT).show();
+//                    }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+                int a = s.indexOf("result");
+                final String result = s.substring(a + 8, a + 9);
                 new android.os.Handler().postDelayed(
                         new Runnable() {
                             public void run() {
                                 // On complete call either onLoginSuccess or onLoginFailed
-                                if (s.equals("1")) {
+                                if (result.equals("1")) {
                                     onSignupSuccess();
-                                }else { onSignupFailed(); }
+                                } else {
+                                    onSignupFailed();
+                                }
                                 progressDialog.dismiss();
                             }
                         }, 2500);
             }
         }
-        //executing the async task
         RegisterUser ru = new RegisterUser();
         ru.execute();
     }
+    //executing the async task
 
     public void onSignupSuccess() {
         signupButton.setEnabled(true);

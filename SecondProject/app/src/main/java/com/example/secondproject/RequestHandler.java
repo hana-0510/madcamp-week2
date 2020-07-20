@@ -4,6 +4,7 @@ import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -21,12 +22,16 @@ public class RequestHandler {
 
     private String Result ;
     private StringBuilder stringBuilder = new StringBuilder();
-    String FinalHttpData = "";
+
+    final String boundary = "*****";
+    final String crlf = "\r\n";
+    final String twoHyphens = "--";
 
     //this method will send a post request to the specified url
     //in this app we are using only post request
     //in the hashmap we have the data to be sent to the server in keyvalue pairs
     public String sendPostRequest(String requestURL, HashMap<String, String> postDataParams) {
+        StringBuilder sb = new StringBuilder();
         URL url;
         try {
             System.setProperty("http.proxyHost", "proxy.example.com");
@@ -39,42 +44,56 @@ public class RequestHandler {
             conn.setRequestMethod("POST");
             conn.setDoInput(true);
             conn.setDoOutput(true);
+            conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
             conn.connect();
 
             OutputStream os = conn.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8));
-            writer.write(getPostDataString(postDataParams));
-            writer.flush();
-            writer.close();
+
+
+            DataOutputStream request = new DataOutputStream(os);
+            request.writeBytes(getPostDataString(postDataParams));
+
+            System.out.println(getPostDataString(postDataParams));
+
+            request.flush();
+            request.close();
+
             os.close();
 
             int responseCode = conn.getResponseCode();
 
             if (responseCode == HttpsURLConnection.HTTP_OK) {
+
                 BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                FinalHttpData = br.readLine();
-            } else {
-                FinalHttpData = "0";
+                sb = new StringBuilder();
+                String response;
+
+                while ((response = br.readLine()) != null) {
+                    sb.append(response);
+                }
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Log.d("d", "log"+FinalHttpData);
-        int a = FinalHttpData.indexOf("result");
-        String result = FinalHttpData.substring(a+8, a+9);
-        Log.d("d", "log"+result);
-        return result;
+        Log.d("d", "log + "+sb.toString());
+        return sb.toString();
     }
 
 
     //this method is converting keyvalue pairs data into a query string as needed to send to the server
     private String getPostDataString(HashMap<String, String> params) throws UnsupportedEncodingException {
+
         for(Map.Entry<String,String> map_entry : params.entrySet()){
-            stringBuilder.append("&");
-            stringBuilder.append(URLEncoder.encode(map_entry.getKey(), "UTF-8"));
-            stringBuilder.append("=");
-            stringBuilder.append(URLEncoder.encode(map_entry.getValue(), "UTF-8"));
+
+
+            stringBuilder.append("--" + boundary + "\r\n");
+            stringBuilder.append("Content-Disposition: form-data; name=\""+ map_entry.getKey() + "\"\r\n\r\n");
+            stringBuilder.append(map_entry.getValue() + "\r\n");
         }
+
+        stringBuilder.append("--" + boundary + "--\r\n");
+
         Result = stringBuilder.toString();
         return Result ;
     }

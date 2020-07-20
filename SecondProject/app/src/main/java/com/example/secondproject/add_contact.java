@@ -2,8 +2,10 @@ package com.example.secondproject;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -74,12 +76,12 @@ public class add_contact extends AppCompatActivity {
                 HashMap<String, String> params = new HashMap<>();
                 User user = SharedPrefManager.getInstance(getApplicationContext()).getUser();
                 params.put("id", user.getEmail());
-                Log.d("d", "log"+user.getEmail());
+//                Log.d("d", "log"+user.getEmail());
                 params.put("password", user.getPassword());
-                Log.d("d", "log"+user.getPassword());
+//                Log.d("d", "log"+user.getPassword());
                 params.put("name", nameString);
                 params.put("phone_no", numString);
-                Log.d("d", "log"+numString);
+//                Log.d("d", "log"+numString);
 
                 //returing the response
                 return requestHandler.sendPostRequest(URLs.URL_CONTACT, params);
@@ -139,6 +141,8 @@ public class add_contact extends AppCompatActivity {
     public void onContactAddSuccess(){
         add_to_server.setEnabled(true);
         Toast.makeText(getBaseContext(), "Contact Added Successfully", Toast.LENGTH_LONG).show();
+        setResult(Activity.RESULT_OK, new Intent());
+//        fragment_1.getContacts();
         finish();
     }
 
