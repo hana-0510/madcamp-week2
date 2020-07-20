@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +28,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 /**
@@ -36,11 +39,12 @@ import java.util.HashMap;
  */
 public class fragment_1 extends Fragment {
 
-    private RecyclerView mRecyclerView;
+    public static RecyclerView mRecyclerView;
     private ContactAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private ArrayList<ContactData> mMyData;
     private TextView when_nothing;
+    private ImageView delete_contact;
 
     public fragment_1() {
         // Required empty public constructor
@@ -61,7 +65,7 @@ public class fragment_1 extends Fragment {
 //        getContacts();
     }
 
-    private static final int REQUEST_SIGNUP = 0;
+    private static final int REQUEST_ADDCONT = 0;
     private Context context;
     private FloatingActionButton add_contact_button;
     @Override
@@ -75,7 +79,6 @@ public class fragment_1 extends Fragment {
             addNewContact();
             when_nothing = view.findViewById(R.id.nocont);
             mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
-            mRecyclerView.setHasFixedSize(true);
             getContacts();
         }
         return view;
@@ -86,19 +89,19 @@ public class fragment_1 extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), add_contact.class);
-                startActivityForResult(intent, REQUEST_SIGNUP);
+                startActivityForResult(intent, REQUEST_ADDCONT);
             }
         });
     }
 
-    public void getContacts(){
 
+
+    public void getContacts(){
         class GetAllContact extends AsyncTask<Void, Void, String> {
 
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-
             }
 
             @Override
@@ -124,7 +127,7 @@ public class fragment_1 extends Fragment {
                     JSONArray jsonArray = new JSONArray(s);
                     if (jsonArray.length()==0){
                         when_nothing.setVisibility(View.VISIBLE);
-                        Toast.makeText(getContext(), "Some error occurred", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getContext(), "Some error occurred", Toast.LENGTH_SHORT).show();
                     }
 
                     for(int i=0; i<jsonArray.length(); i++){
@@ -134,14 +137,24 @@ public class fragment_1 extends Fragment {
                         String name= jo.getString("name");
                         String number= jo.getString("phone_no");
                         mMyData.add(new ContactData(name,  number, id));
-//                        Log.d("d", "log"+mMyData.toString());
                     }
 
-                    when_nothing.setVisibility(View.GONE);
-                    mLayoutManager = new LinearLayoutManager(getActivity());
-                    mRecyclerView.setLayoutManager(mLayoutManager);
-                    mAdapter = new ContactAdapter(mMyData);
-                    mRecyclerView.setAdapter(mAdapter);
+                    Collections.sort(mMyData, new Comparator<ContactData>() {
+                        @Override
+                        public int compare(ContactData a, ContactData b) {
+                            return a.getName().compareTo(b.getName());
+                        }
+                    });
+
+                   if (jsonArray.length()!=0) {
+                       when_nothing.setVisibility(View.GONE);
+                       mLayoutManager = new LinearLayoutManager(getActivity());
+                       mRecyclerView.setLayoutManager(mLayoutManager);
+                       mRecyclerView.setHasFixedSize(true);
+                       mAdapter = new ContactAdapter(mMyData);
+                       mRecyclerView.setAdapter(mAdapter);
+                   }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -152,11 +165,9 @@ public class fragment_1 extends Fragment {
     }
 
 
-
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_SIGNUP) {
+        if (requestCode == REQUEST_ADDCONT) {
             if (resultCode == Activity.RESULT_OK) {
                 getContacts();
             }

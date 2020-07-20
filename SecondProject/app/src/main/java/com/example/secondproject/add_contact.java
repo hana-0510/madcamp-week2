@@ -84,7 +84,7 @@ public class add_contact extends AppCompatActivity {
 //                Log.d("d", "log"+numString);
 
                 //returing the response
-                return requestHandler.sendPostRequest(URLs.URL_CONTACT, params);
+                return requestHandler.sendPostRequest(URLs.URL_ADD_CONTACT, params);
             }
 
             final ProgressDialog progressDialog = new ProgressDialog(add_contact.this);
