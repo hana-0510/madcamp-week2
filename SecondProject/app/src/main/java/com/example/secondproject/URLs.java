@@ -9,6 +9,7 @@ public class URLs {
     public static final String URL_CONTACT= ROOT_URL + "add_contact";
     public static final String URL_GET_CONTACT= ROOT_URL + "get_contact";
     public static final String URL_ADD_IMAGE= ROOT_URL + "add_Image";
+    public static final String URL_GET_IMAGE= ROOT_URL + "get_image";
 
 
 }
