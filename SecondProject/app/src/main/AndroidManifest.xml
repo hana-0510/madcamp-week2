@@ -18,7 +18,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".add_todo"></activity>
         <activity android:name=".SignupActivity" />
         <activity android:name=".SplashScreen" />
         <activity android:name=".add_contact" />

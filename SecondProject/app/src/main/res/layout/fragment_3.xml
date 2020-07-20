@@ -5,7 +5,10 @@
     android:layout_height="match_parent"
     tools:context=".fragment_3">
 
-
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/todo_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -18,19 +21,12 @@
         android:layout_margin="@dimen/fab_margin"
         android:src="@android:drawable/ic_input_add" />
 
-    <EditText
-        android:id="@+id/date_todo"
+    <TextView
+        android:id="@+id/notodo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Name" />
+        android:layout_gravity="center"
+        android:text="@string/no_todo" />
 
-    <!--    <DatePicker-->
-<!--        android:id="@+id/datePicker1"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_gravity="center"-->
-<!--        android:datePickerMode="calendar"/>-->
 
 </FrameLayout>

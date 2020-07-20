@@ -44,7 +44,6 @@ public class fragment_1 extends Fragment {
     private RecyclerView.LayoutManager mLayoutManager;
     private ArrayList<ContactData> mMyData;
     private TextView when_nothing;
-    private ImageView delete_contact;
 
     public fragment_1() {
         // Required empty public constructor
@@ -62,7 +61,6 @@ public class fragment_1 extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        getContacts();
     }
 
     private static final int REQUEST_ADDCONT = 0;

@@ -8,20 +8,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 
-public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHolder> {
+public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder> {
 
-    private ArrayList<ContactData> myDataList;
-    private ArrayList<ContactData> filteredList;
+    private ArrayList<ToDos> myDataList;
+    private ArrayList<ToDos> filteredList;
 
-    ContactAdapter(ArrayList<ContactData> dataList) {
+    ToDoAdapter(ArrayList<ToDos> dataList) {
         this.myDataList = dataList;
         this.filteredList = dataList;
     }
@@ -32,7 +34,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         //전개자(Inflater)를 통해 얻은 참조 객체를 통해 뷰홀더 객체 생성
-        View view = inflater.inflate(R.layout.contact_item, parent, false);
+        View view = inflater.inflate(R.layout.todo_item, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
         return viewHolder;
     }
@@ -41,9 +43,18 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         //ViewHolder가 관리하는 View에 position에 해당하는 데이터 바인딩
 //        viewHolder.imageView.setImageResource(filteredList.get(position).getImage());
-        viewHolder.name.setText(filteredList.get(position).getName());
-        viewHolder.number.setText(filteredList.get(position).getNumber());
-//        viewHolder.itemView.setOnClickListener(fil);
+        viewHolder.text_todo.setText(filteredList.get(position).getToDo());
+        int savedmonth = filteredList.get(position).getMonth();
+        int savedday = filteredList.get(position).getDay();
+        viewHolder.text_dueDate.setText(savedmonth+" / "+savedday);
+        Calendar calendar = Calendar.getInstance();
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        if (savedmonth<month) {
+            viewHolder.background.setBackgroundColor(viewHolder.itemView.getResources().getColor(R.color.red));
+        } else if (savedmonth==month && savedday<day){
+            viewHolder.background.setBackgroundColor(viewHolder.itemView.getResources().getColor(R.color.red));
+        }
     }
 
     @Override
@@ -52,43 +63,29 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         return filteredList.size();
     }
 
-    //    public ContactData getItem(int position){
-//        return filteredList.get(position);
-//    }
-//
-//    public interface OnItemClickListener {
-//        void onItemClick(View v, int pos);
-//    }
-//    private OnItemClickListener contactListener = null;
-
-//    public void OnItemClickListener(OnItemClickListener listner) {
-//        this.contactListener = listner;
-//    }
-//
-
     public class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView imageView;
-        TextView name;
-        TextView number;
-        ImageView delete_contact;
+        TextView text_todo;
+        TextView text_dueDate;
+        ImageView done_button;
+        LinearLayout background;
 
         ViewHolder(View itemView) {
             super(itemView);
 
-//            imageView = itemView.findViewById(R.id.imageView2);
-            name = itemView.findViewById(R.id.name);
-            number = itemView.findViewById(R.id.number);
-            delete_contact = itemView.findViewById(R.id.contact_delete);
+            background = itemView.findViewById(R.id.background);
+            text_todo = itemView.findViewById(R.id.todo_text);
+            text_dueDate = itemView.findViewById(R.id.date_text);
+            done_button = itemView.findViewById(R.id.todo_done);
             final AlertDialog.Builder builder = new AlertDialog.Builder(itemView.getContext());
 
-            delete_contact.setOnClickListener(new View.OnClickListener() {
+            done_button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(final View view) {
                     final int pos = getAdapterPosition();
                     builder.setMessage("Are you sure you want to delete this contact?").setTitle("DELETE")
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    deleteContact(view, pos);
+                                    deleteTodo(view, pos);
                                 }
                             })
                             .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -122,15 +119,11 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         }
 
 
-        private void deleteContact(final View view, final int pos) {
+        private void deleteTodo(final View view, final int pos) {
             class DeleteContact extends AsyncTask<Void, Void, String> {
-                ContactAdapter myAdapter;
 
                 @Override
-                protected void onPreExecute() {
-                    myAdapter = (ContactAdapter) fragment_1.mRecyclerView.getAdapter();
-                    super.onPreExecute();
-                }
+                protected void onPreExecute() { super.onPreExecute(); }
 
                 @Override
                 protected String doInBackground(Void... voids) {
@@ -144,64 +137,25 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                     params.put("password", user.getPassword());
                     params.put("Oid", myDataList.get(pos).getOid());
                     //returing the response
-                    return requestHandler.sendPostRequest(URLs.URL_DEL_CONTACT, params);
+                    return requestHandler.sendPostRequest(URLs.URL_DEL_TODO, params);
                 }
 
                 @Override
                 protected void onPostExecute(final String s) {
                     super.onPostExecute(s);
-
                     int a = s.indexOf("result");
                     final String result = s.substring(a + 8, a + 9);
                     if (result.equals("1")) {
-                        Toast.makeText(view.getContext(), "Contact deleted successfully", Toast.LENGTH_LONG).show();
+                        Toast.makeText(view.getContext(), "Well Done!", Toast.LENGTH_LONG).show();
                         filteredList.remove(pos);
                         notifyItemRemoved(pos);
                     } else {
-                        Toast.makeText(view.getContext(), "Contact not deleted", Toast.LENGTH_LONG).show();
+                        Toast.makeText(view.getContext(), "Failed", Toast.LENGTH_LONG).show();
                     }
                 }
             }
             DeleteContact dc = new DeleteContact();
             dc.execute();
         }
-
-
-//    //@Override
-//    public Filter getFilter() {
-//        return new Filter() {
-//            @Override
-//            protected FilterResults performFiltering(CharSequence constraint) {
-//                String charString = constraint.toString();
-//                if(charString.isEmpty()) {
-//                    filteredList = myDataList;
-//                } else {
-//                    ArrayList<ContactData> filteringList = new ArrayList<>();
-//                    for(ContactData name : myDataList) {
-//                        if(name.getName().toLowerCase().contains(charString.toLowerCase())) {
-//                            filteringList.add(name);
-//                        }
-//                        else if(name.getNumber().toLowerCase().contains(charString.toLowerCase())) {
-//                            filteringList.add(name);
-//                        }
-//                        else if(name.getNumber_raw().toLowerCase().contains(charString.toLowerCase())) {
-//                            filteringList.add(name);
-//                        }
-//                    }
-//                    filteredList = filteringList;
-//                }
-//                FilterResults filterResults = new FilterResults();
-//                filterResults.values = filteredList;
-//                return filterResults;
-//            }
-//
-//            @Override
-//            protected void publishResults(CharSequence constraint, FilterResults results) {
-//                filteredList = (ArrayList<ContactData>)results.values;
-//                notifyDataSetChanged();
-//            }
-//        };
-//    }
-
     }
 }
