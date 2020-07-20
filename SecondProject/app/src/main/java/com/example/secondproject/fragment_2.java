@@ -13,7 +13,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -26,6 +28,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -33,6 +40,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -40,6 +48,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -91,10 +100,6 @@ public class fragment_2 extends Fragment {
                     selectImage();
                 }
             });
-            Upload_Btn.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) { ImageUploadToServerFunction();
-                }
-            });
         }
         return view;
     }
@@ -110,8 +115,9 @@ public class fragment_2 extends Fragment {
                 {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     File f = new File(android.os.Environment.getExternalStorageDirectory(), "temp.jpg");
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-                    startActivityForResult(intent, 1);
+                    Uri uri = FileProvider.getUriForFile(getContext(), "com.bignerdranch.android.test.fileprovider", f);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+                    getActivity().startActivityForResult(intent, 1);
                 }
                 else if (options[item].equals("Choose from Gallery"))
                 {
@@ -131,6 +137,7 @@ public class fragment_2 extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == 1) {
+                /*
                 File f = new File(Environment.getExternalStorageDirectory().toString());
                 for (File temp : f.listFiles()) {
                     if (temp.getName().equals("temp.jpg")) {
@@ -138,6 +145,10 @@ public class fragment_2 extends Fragment {
                         break;
                     }
                 }
+
+                 */
+
+                /*
                 try {
                     Bitmap bitmap;
                     BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
@@ -165,7 +176,22 @@ public class fragment_2 extends Fragment {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                 */
             } else if (requestCode == 2) {
+
+                Bitmap img_bit = null;
+                try {
+                    InputStream in = getActivity().getContentResolver().openInputStream(data.getData());
+                    img_bit = BitmapFactory.decodeStream(in);
+                    //System.out.println(img_bit.toString());
+                    //IDProf.setImageBitmap(img_bit);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                upload_Image(img_bit);
+
+
+                /*
                 Uri uri = data.getData();
                 String[] filePath = { MediaStore.Images.Media.DATA };
                 Cursor c = getActivity().getContentResolver().query(uri, filePath, null, null, null);
@@ -178,157 +204,81 @@ public class fragment_2 extends Fragment {
                 Log.w("path of image", picturePath+"");
                 IDProf.setImageBitmap(thumbnail);
                 BitMapToString(thumbnail);
+
+
+                 */
+
             }
         }
     }
 
-    public String BitMapToString(Bitmap userImage1) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        userImage1.compress(Bitmap.CompressFormat.PNG, 60, baos);
-        byte[] b = baos.toByteArray();
-        Document_img1 = Base64.encodeToString(b, Base64.DEFAULT);
-        return Document_img1;
-    }
 
-    public void ImageUploadToServerFunction(){
+    public void upload_Image(final Bitmap bit_img){
+        Toast.makeText(getContext(), "upload 234234", Toast.LENGTH_SHORT).show();
 
-        class AsyncTaskUploadClass extends AsyncTask<Void,Void,String> {
+        class Upload_I extends AsyncTask<Void, Void, String> {
 
             @Override
             protected void onPreExecute() {
-
                 super.onPreExecute();
-
-                // Showing progress dialog at image upload time.
                 progressDialog = ProgressDialog.show(context,"Image is Uploading","Please Wait",false,false);
             }
 
             @Override
-            protected void onPostExecute(String string1) {
+            protected String doInBackground(Void... voids) {
+                //creating request handler object
+                RequestHandler requestHandler = new RequestHandler();
 
-                super.onPostExecute(string1);
-
-                // Dismiss the progress dialog after done uploading.
-                progressDialog.dismiss();
-
-                // Printing uploading success message coming from server on android app.
-                Toast.makeText(context, string1,Toast.LENGTH_LONG).show();
-
-                // Setting image as transparent after done uploading.
-                IDProf.setImageResource(android.R.color.transparent);
+                //creating request parameters
+                HashMap<String, String> params = new HashMap<>();
+                User user = SharedPrefManager.getInstance(getContext()).getUser();
+                params.put("id", user.getEmail());
+                params.put("password", user.getPassword());
+                //returing the response
+                return requestHandler.sendPostFile(URLs.URL_ADD_IMAGE, params, bit_img);
             }
 
             @Override
-            protected String doInBackground(Void... params) {
+            protected void onPostExecute(final String s) {
+                Toast.makeText(getContext(), "upload finish", Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
+                super.onPostExecute(s);
+                try {
+                    JSONObject jsonO = new JSONObject(s);
+                    String bit_st = jsonO.getString("encoded");
+                    System.out.println("qwerqwerqwerqwer: "+bit_st);
 
-                ImageProcessClass imageProcessClass = new ImageProcessClass();
+                    byte[] encodeByte = Base64.decode(bit_st, Base64.DEFAULT);
+                    Bitmap bitmap_r = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+                    IDProf.setImageBitmap(bitmap_r);
 
-                HashMap<String,String> HashMapParams = new HashMap<String,String>();
 
-                HashMapParams.put(ImageNameFieldOnServer, GetImageNameFromEditText);
 
-                HashMapParams.put(ImagePathFieldOnServer, ConvertImage);
 
-                String FinalData = imageProcessClass.ImageHttpRequest(ImageUploadPathOnSever, HashMapParams);
-
-                return FinalData;
-            }
-        }
-        AsyncTaskUploadClass AsyncTaskUploadClassOBJ = new AsyncTaskUploadClass();
-
-        AsyncTaskUploadClassOBJ.execute();
-    }
-
-    public class ImageProcessClass{
-
-        public String ImageHttpRequest(String requestURL,HashMap<String, String> PData) {
-
-            StringBuilder stringBuilder = new StringBuilder();
-
-            try {
-
-                URL url;
-                HttpURLConnection httpURLConnectionObject ;
-                OutputStream OutPutStream;
-                BufferedWriter bufferedWriterObject ;
-                BufferedReader bufferedReaderObject ;
-                int RC ;
-
-                url = new URL(requestURL);
-
-                httpURLConnectionObject = (HttpURLConnection) url.openConnection();
-
-                httpURLConnectionObject.setReadTimeout(19000);
-
-                httpURLConnectionObject.setConnectTimeout(19000);
-
-                httpURLConnectionObject.setRequestMethod("POST");
-
-                httpURLConnectionObject.setDoInput(true);
-
-                httpURLConnectionObject.setDoOutput(true);
-
-                OutPutStream = httpURLConnectionObject.getOutputStream();
-
-                bufferedWriterObject = new BufferedWriter(
-
-                        new OutputStreamWriter(OutPutStream, "UTF-8"));
-
-                bufferedWriterObject.write(bufferedWriterDataFN(PData));
-
-                bufferedWriterObject.flush();
-
-                bufferedWriterObject.close();
-
-                OutPutStream.close();
-
-                RC = httpURLConnectionObject.getResponseCode();
-
-                if (RC == HttpsURLConnection.HTTP_OK) {
-
-                    bufferedReaderObject = new BufferedReader(new InputStreamReader(httpURLConnectionObject.getInputStream()));
-
-                    stringBuilder = new StringBuilder();
-
-                    String RC2;
-
-                    while ((RC2 = bufferedReaderObject.readLine()) != null){
-
-                        stringBuilder.append(RC2);
+                    /*
+                    for(int i=0; i<jsonArray.length(); i++){
+                        JSONObject jo = jsonArray.getJSONObject(i);
+                        Log.d("d", "log"+jo.toString());
+                        String id = jo.getString("Oid");
+                        String name= jo.getString("name");
+                        String number= jo.getString("phone_no");
+                        mMyData.add(new ContactData(name,  number, id));
+//                        Log.d("d", "log"+mMyData.toString());
                     }
+
+                    when_nothing.setVisibility(View.GONE);
+                    mLayoutManager = new LinearLayoutManager(getActivity());
+                    mRecyclerView.setLayoutManager(mLayoutManager);
+                    mAdapter = new ContactAdapter(mMyData);
+                    mRecyclerView.setAdapter(mAdapter);
+                    */
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
 
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-            return stringBuilder.toString();
         }
-
-        private String bufferedWriterDataFN(HashMap<String, String> HashMapParams) throws UnsupportedEncodingException {
-
-            StringBuilder stringBuilderObject;
-
-            stringBuilderObject = new StringBuilder();
-
-            for (Map.Entry<String, String> KEY : HashMapParams.entrySet()) {
-
-                if (check)
-                    check = false;
-                else
-                    stringBuilderObject.append("&");
-
-                stringBuilderObject.append(URLEncoder.encode(KEY.getKey(), "UTF-8"));
-
-                stringBuilderObject.append("=");
-
-                stringBuilderObject.append(URLEncoder.encode(KEY.getValue(), "UTF-8"));
-            }
-
-            return stringBuilderObject.toString();
-        }
-
+        Upload_I up = new Upload_I();
+        up.execute();
     }
-
-
-
 }
