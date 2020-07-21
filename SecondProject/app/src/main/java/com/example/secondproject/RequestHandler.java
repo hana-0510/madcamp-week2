@@ -1,8 +1,10 @@
 package com.example.secondproject;
 
 import android.graphics.Bitmap;
-import android.util.Base64;
+import android.os.Build;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -16,6 +18,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,7 +72,7 @@ public class RequestHandler {
 
             if (responseCode == HttpsURLConnection.HTTP_OK) {
 
-                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(),"UTF-8"));
                 sb = new StringBuilder();
                 String response;
 
@@ -87,15 +90,33 @@ public class RequestHandler {
 
 
     //this method is converting keyvalue pairs data into a query string as needed to send to the server
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private String getPostDataString(HashMap<String, String> params) throws UnsupportedEncodingException {
 
         for(Map.Entry<String,String> map_entry : params.entrySet()){
 
 
             stringBuilder.append("--" + boundary + "\r\n");
-            stringBuilder.append("Content-Disposition: form-data; name=\""+ map_entry.getKey() + "\"\r\n\r\n");
-            stringBuilder.append(map_entry.getValue() + "\r\n");
+            stringBuilder.append("Content-Disposition: form-data; name=\"" + map_entry.getKey() + "\"\r\n\r\n");
+            if (map_entry.getKey() == "name" || map_entry.getKey() == "dowhat"){
+                byte[] data_Bytes = new byte[0];
+                try {
+                    data_Bytes = map_entry.getValue().getBytes("UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                java.util.Base64.Encoder encoder = Base64.getEncoder();
+                String data_encoded = encoder.encodeToString(data_Bytes);
+                System.out.println(encoder.encodeToString(data_Bytes));
+                stringBuilder.append(data_encoded + "\r\n");
+                System.out.println("data_encoded:" + data_encoded);
+            }
+            else {
+                stringBuilder.append(map_entry.getValue() + "\r\n");
+            }
+
         }
+
 
         //stringBuilder.append("--" + boundary + "--\r\n");
 
@@ -152,7 +173,7 @@ public class RequestHandler {
 
             if (responseCode == HttpsURLConnection.HTTP_OK) {
 
-                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(),"UTF-8"));
                 sb = new StringBuilder();
                 String response;
 
@@ -171,13 +192,31 @@ public class RequestHandler {
 
 
     //this method is converting keyvalue pairs data into a query string as needed to send to the server
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private String getPostFile(HashMap<String, String> params) throws UnsupportedEncodingException {
 
         for(Map.Entry<String,String> map_entry : params.entrySet()){
 
             stringBuilder.append("--" + boundary + "\r\n");
-            stringBuilder.append("Content-Disposition: form-data; name=\""+ map_entry.getKey() + "\"\r\n\r\n");
-            stringBuilder.append(map_entry.getValue() + "\r\n");
+
+            stringBuilder.append("Content-Disposition: form-data; name=\"" + map_entry.getKey() + "\"\r\n\r\n");
+
+            if (map_entry.getKey() == "name"){
+                byte[] data_Bytes = new byte[0];
+                try {
+                    data_Bytes = map_entry.getValue().getBytes("UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                java.util.Base64.Encoder encoder = Base64.getEncoder();
+                String data_encoded = encoder.encodeToString(data_Bytes);
+                System.out.println(encoder.encodeToString(data_Bytes));
+                stringBuilder.append(data_encoded + "\r\n");
+                System.out.println("data_encoded:" + data_encoded);
+            }
+            else {
+                stringBuilder.append(map_entry.getValue() + "\r\n");
+            }
         }
         Result = stringBuilder.toString();
         return Result;

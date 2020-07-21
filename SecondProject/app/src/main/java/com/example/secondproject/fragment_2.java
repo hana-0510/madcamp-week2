@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -102,6 +104,7 @@ public class fragment_2 extends Fragment implements Serializable
     @Override
     public void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState);
         //mGalleryData = new ArrayList<GalleryData>();
+
     }
 
     @Override
@@ -180,6 +183,7 @@ public class fragment_2 extends Fragment implements Serializable
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == 1) {
                 Bitmap img_bit = null;
+                Bitmap img_bit_r = null;
                 File f = new File(Environment.getExternalStorageDirectory().toString());
                 for (File temp : f.listFiles()) {
                     if (temp.getName().equals("temp.jpg")) {
@@ -190,6 +194,28 @@ public class fragment_2 extends Fragment implements Serializable
                 try {
                     BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
                     img_bit = BitmapFactory.decodeFile(f.getAbsolutePath(), bitmapOptions);
+                    ExifInterface ei = new ExifInterface(f.getAbsolutePath());
+                    int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+
+                    switch(orientation) {
+                        case ExifInterface.ORIENTATION_ROTATE_90:
+                            img_bit_r = rotateImage(img_bit, 90);
+                            break;
+                        case ExifInterface.ORIENTATION_ROTATE_180:
+                            img_bit_r = rotateImage(img_bit, 180);
+                            break;
+                        case ExifInterface.ORIENTATION_ROTATE_270:
+                            img_bit_r = rotateImage(img_bit, 270);
+                            break;
+                        case ExifInterface.ORIENTATION_NORMAL:
+                        default:
+                            img_bit_r = img_bit;
+                    }
+
+
+
+
+
                     String path = android.os.Environment.getExternalStorageDirectory()
                             + File.separator + "Phoenix" + File.separator + "default";
                     f.delete();
@@ -199,7 +225,7 @@ public class fragment_2 extends Fragment implements Serializable
                     e.printStackTrace();
                 }
 
-                upload_Image(img_bit);
+                upload_Image(img_bit_r);
 
             } else if (requestCode == 2) {
                 Bitmap img_bit = null;
@@ -215,6 +241,12 @@ public class fragment_2 extends Fragment implements Serializable
             }
             getGallery();
         }
+    }
+
+    public static Bitmap rotateImage(Bitmap source, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
     }
 
 
@@ -263,6 +295,43 @@ public class fragment_2 extends Fragment implements Serializable
         }
         Upload_I up = new Upload_I();
         up.execute();
+    }
+
+    public void delete_image(final String Oid){
+        class Delete_I extends AsyncTask<Void, Void, String> {
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                progressDialog = ProgressDialog.show(context,"Deleting","Please Wait",false,false);
+            }
+
+            @Override
+            protected String doInBackground(Void... voids) {
+                //creating request handler object
+                RequestHandler requestHandler = new RequestHandler();
+
+                //creating request parameters
+                HashMap<String, String> params = new HashMap<>();
+                User user = SharedPrefManager.getInstance(getContext()).getUser();
+                params.put("id", user.getEmail());
+                params.put("password", user.getPassword());
+                params.put("Oid", Oid);
+                //returing the response
+                return requestHandler.sendPostRequest(URLs.URL_DEL_IMAGE, params);
+            }
+
+            @Override
+            protected void onPostExecute(final String s) {
+                Toast.makeText(getContext(), "delete finish", Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
+                super.onPostExecute(s);
+            }
+        }
+        Delete_I del = new Delete_I();
+        del.execute();
+
+        getGallery();
     }
 
     public void getGallery(){
@@ -317,7 +386,7 @@ public class fragment_2 extends Fragment implements Serializable
                         mAdapter = new GalleryAdapter(mGalleryData);
                         mRecyclerView.setAdapter(mAdapter);
 
-                        mAdapter.setOnItemClickListner(new GalleryAdapter.OnItemClickListner() {
+                        mAdapter.setOnItemClickListner(new GalleryAdapter.OnItemClickListener() {
                                @Override
                                public void onItemClick(View v, int pos) {
                                    GalleryData item = mAdapter.getItem(pos);
@@ -331,6 +400,24 @@ public class fragment_2 extends Fragment implements Serializable
                                }
                            }
                         );
+                        mAdapter.setOnItemLongClickListener(new GalleryAdapter.OnItemLongClickListener() {
+                            @Override
+                            public void onItemLongClick(View v, final int pos) {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                builder.setTitle("이미지 삭제");
+                                builder.setMessage("이미지를 삭제하시겠습니까?");
+                                builder.setPositiveButton("삭제", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        delete_image(mGalleryData.get(pos).getOid());
+                                        Toast.makeText(getActivity(), "삭제되었습니다.", Toast.LENGTH_SHORT);
+                                        System.out.println("deldeldeldeldledldleldeldledledl");
+                                    }
+                                });
+                                builder.setNegativeButton("취소", null);
+                                builder.show();
+                            }
+                        });
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
