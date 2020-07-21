@@ -10,5 +10,7 @@
         android:id="@+id/Gallery_item"
         android:src="@mipmap/ic_launcher_round"
         android:adjustViewBounds="true"
-        android:layout_height="match_parent" />
+        android:layout_height="100dp"
+        android:background="@color/black"
+        android:scaleType="centerCrop"/>
 </RelativeLayout>
