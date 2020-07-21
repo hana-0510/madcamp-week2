@@ -157,7 +157,7 @@ public class fragment_2 extends Fragment implements Serializable
                 if (options[item].equals("Take Photo"))
                 {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    File f = new File(android.os.Environment.getExternalStorageDirectory(), "temp.jpg");
+                    File f = new File(android.os.Environment.getExternalStorageDirectory(), "temp_gal.jpg");
                     Uri uri = FileProvider.getUriForFile(context, "com.bignerdranch.android.test.fileprovider", f);
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
                     startActivityForResult(intent, 1);
@@ -184,7 +184,7 @@ public class fragment_2 extends Fragment implements Serializable
                 Bitmap img_bit_r = null;
                 File f = new File(Environment.getExternalStorageDirectory().toString());
                 for (File temp : f.listFiles()) {
-                    if (temp.getName().equals("temp.jpg")) {
+                    if (temp.getName().equals("temp_gal.jpg")) {
                         f = temp;
                         break;
                     }

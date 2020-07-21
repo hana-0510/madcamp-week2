@@ -169,23 +169,23 @@ public class add_contact extends AppCompatActivity {
     }
 
     private void selectImage() {
-        final CharSequence[] options = {"Choose from Gallery","Cancel" };
+        final CharSequence[] options = {"Take Photo", "Choose from Gallery","Cancel" };
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Add Photo!");
         builder.setItems(options, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int item) {
-                /*
+
                 if (options[item].equals("Take Photo"))
                 {
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     File f = new File(android.os.Environment.getExternalStorageDirectory(), "temp.jpg");
                     Uri uri = FileProvider.getUriForFile(getApplicationContext(), "com.bignerdranch.android.test.fileprovider", f);
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+                    set_image();
                     startActivityForResult(intent, 1);
                 }
-                else */
-                if (options[item].equals("Choose from Gallery"))
+                else if (options[item].equals("Choose from Gallery"))
                 {
                     set_image();
                     Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -203,7 +203,7 @@ public class add_contact extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            /*
+
             if (requestCode == 1) {
                 Bitmap img_bit_c = null;
                 Bitmap img_bit_r = null;
@@ -247,7 +247,7 @@ public class add_contact extends AppCompatActivity {
 
 
             } else
-            */
+
             if (requestCode == 2) {
                 Bitmap img_bit = null;
                 try {
