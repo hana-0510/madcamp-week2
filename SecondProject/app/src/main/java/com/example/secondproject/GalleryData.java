@@ -1,9 +1,6 @@
 package com.example.secondproject;
 
 import android.graphics.Bitmap;
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.io.Serializable;
 
 public class GalleryData implements Serializable {

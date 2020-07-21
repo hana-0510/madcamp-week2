@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SecondProject</string>
+    <string name="app_name">Keep Up</string>
     <string name="tab_text_1">Contacts</string>
     <string name="tab_text_2">Gallery</string>
     <string name="tab_text_3">ToDos</string>
