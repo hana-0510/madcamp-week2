@@ -11,15 +11,27 @@
         android:layout_height="match_parent"/>
 
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--        android:id="@+id/add_todo"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="bottom|end"-->
+<!--        android:clickable="true"-->
+<!--        android:focusable="true"-->
+<!--        android:layout_margin="@dimen/fab_margin"-->
+<!--        android:src="@android:drawable/ic_input_add" />-->
+
+    <Button
         android:id="@+id/add_todo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_gravity="bottom|end"
-        android:clickable="true"
-        android:focusable="true"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_input_add" />
+        android:background="@drawable/image_add_button"
+        android:text="+"
+        android:textColor="#FFFFFF"
+        android:textSize="40dp"
+        tools:ignore="MissingConstraints" />
 
     <TextView
         android:id="@+id/notodo"

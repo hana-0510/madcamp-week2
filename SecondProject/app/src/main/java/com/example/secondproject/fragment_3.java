@@ -26,13 +26,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,7 +50,7 @@ import static java.lang.Integer.parseInt;
 //implements DatePickerDialog.OnDateSetListener
 public class fragment_3 extends Fragment {
 
-    private FloatingActionButton add_todo_button;
+    private Button add_todo_button;
     String toDo;
     DatePickerDialog datePickerDialog;
     int year, month, day;

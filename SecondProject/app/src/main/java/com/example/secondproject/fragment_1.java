@@ -21,8 +21,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -65,7 +63,7 @@ public class fragment_1 extends Fragment {
 
     private static final int REQUEST_ADDCONT = 0;
     private Context context;
-    private FloatingActionButton add_contact_button;
+    private Button add_contact_button;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
