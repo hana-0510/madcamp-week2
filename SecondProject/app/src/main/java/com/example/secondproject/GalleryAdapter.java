@@ -1,11 +1,11 @@
 package com.example.secondproject;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -58,20 +58,24 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         return filteredList.get(position);
     }
 
-    public interface OnItemClickListner {
+    public interface OnItemClickListener {
         void onItemClick(View v, int pos);
     }
 
-    private OnItemClickListner galleryListener = null;
+    public interface OnItemLongClickListener {
+        void onItemLongClick(View v, int pos);
+    }
 
-    public void setOnItemClickListner(OnItemClickListner listner) {
+
+    private OnItemClickListener galleryListener = null;
+    private OnItemLongClickListener galleryLongListener = null;
+
+    public void setOnItemClickListner(OnItemClickListener listner) {
         this.galleryListener = listner;
     }
-
-    public interface OnItemClickListener {
-        void onItemCLick(View v, int position) ;
+    public void setOnItemLongClickListener(OnItemLongClickListener listner) {
+        this.galleryLongListener = listner;
     }
-
 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -106,6 +110,21 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
                         }
 
                     }
+                }
+            });
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener(){
+                @Override
+                public boolean onLongClick(View v)
+                {
+                    int pos = getAdapterPosition();
+                    if (pos != RecyclerView.NO_POSITION){
+                        notifyItemChanged(pos);
+                        if (galleryLongListener != null){
+                            galleryLongListener.onItemLongClick(v,pos);
+                        }
+                    }
+                    return true;
                 }
             });
 
