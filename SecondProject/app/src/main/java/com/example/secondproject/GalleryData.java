@@ -1,5 +1,7 @@
 package com.example.secondproject;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.graphics.Bitmap;
 import java.io.Serializable;
 

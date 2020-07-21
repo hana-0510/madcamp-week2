@@ -1,6 +1,8 @@
 package com.example.secondproject;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -20,7 +22,7 @@ import java.util.HashMap;
 public class ItemActivity extends AppCompatActivity {
 
     String number, name, Oid;
-    ImageView edit_name, edit_num, fixContact;
+    ImageView edit_name, edit_num, fixContact, profile_c;
     TextView name_text, num_text;
     EditText name_edited, num_edited;
     String newName, newNum;
@@ -31,6 +33,8 @@ public class ItemActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.contact_clicked);
 
+
+
         name_text = (TextView) findViewById(R.id.textView1);
         num_text = (TextView) findViewById(R.id.textView2);
         edit_name = (ImageView) findViewById(R.id.edit_name);
@@ -40,8 +44,15 @@ public class ItemActivity extends AppCompatActivity {
         fixContact = (ImageView) findViewById(R.id.fix_contact);
 //        check_num = (ImageView) findViewById(R.id.num_check);
 
+        profile_c = (ImageView) findViewById(R.id.image_profile_c);
+
 
         Intent intent = getIntent(); /*데이터 수신*/
+
+        //Bitmap img_bit = intent.getParcelableExtra("prof");
+        byte[] arr = intent.getByteArrayExtra("prof");
+        Bitmap img_bit = BitmapFactory.decodeByteArray(arr, 0, arr.length);
+        profile_c.setImageBitmap(img_bit);
 
         name = intent.getExtras().getString("name"); /*String형*/
         name_text.setText(name);

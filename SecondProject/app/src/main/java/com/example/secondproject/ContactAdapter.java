@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -44,6 +47,10 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 //        viewHolder.imageView.setImageResource(filteredList.get(position).getImage());
         viewHolder.name.setText(filteredList.get(position).getName());
         viewHolder.number.setText(filteredList.get(position).getNumber());
+        if (filteredList.get(position).getBitmap() != null) {
+            System.out.println("Adapter bit:" + filteredList.get(position).getBitmap());
+            viewHolder.profile.setImageBitmap(filteredList.get(position).getBitmap());
+        }
     }
 
     @Override
@@ -53,10 +60,11 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView imageView;
+
         TextView name;
         TextView number;
         ImageView delete_contact;
+        ImageView profile;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -65,6 +73,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
             name = itemView.findViewById(R.id.name);
             number = itemView.findViewById(R.id.number);
             delete_contact = itemView.findViewById(R.id.contact_delete);
+            profile = itemView.findViewById(R.id.image_profile);
             final AlertDialog.Builder builder = new AlertDialog.Builder(itemView.getContext());
 
             delete_contact.setOnClickListener(new View.OnClickListener() {
@@ -116,6 +125,14 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                         intent.putExtra("number", myDataList.get(pos).getNumber());
                         intent.putExtra("Oid", myDataList.get(pos).getOid());
                         intent.putExtra("pos", pos);
+                        //intent.putExtra("prof", (Bitmap) myDataList.get(pos).getBitmap());
+
+                        Bitmap sendBitmap = myDataList.get(pos).getBitmap();
+                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                        sendBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                        byte[] byteArray = stream.toByteArray();
+                        intent.putExtra("prof",byteArray);
+
                         view.getContext().startActivity(intent);
                     }
                     notifyItemChanged(pos);

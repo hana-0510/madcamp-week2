@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -11,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -132,7 +135,12 @@ public class fragment_1 extends Fragment {
                         String id = jo.getString("Oid");
                         String name= jo.getString("name");
                         String number= jo.getString("phone_no");
-                        mMyData.add(new ContactData(name,  number, id));
+                        String prof_img= jo.getString("prof_img");
+                        byte[] encodeByte = Base64.decode(prof_img, Base64.DEFAULT);
+                        Bitmap bitmap_c = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+                        System.out.println("bibibibibibibibibbiib" + bitmap_c);
+                        System.out.println("prprprprprprprprprpr" + prof_img);
+                        mMyData.add(new ContactData(name,  number, id, bitmap_c));
                     }
 
                     Collections.sort(mMyData, new Comparator<ContactData>() {

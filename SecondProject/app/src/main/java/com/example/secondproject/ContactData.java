@@ -1,15 +1,19 @@
 package com.example.secondproject;
 
+import android.graphics.Bitmap;
+
 public class ContactData {
     private String name;
     private String number;
     private String Oid;
+    private Bitmap img_bit;
 
 
-    public ContactData(String name, String number, String Oid){
+    public ContactData(String name, String number, String Oid, Bitmap img){
         this.name = name;
         this.number = number;
         this.Oid = Oid;
+        this.img_bit = img;
     }
 
 
@@ -22,7 +26,10 @@ public class ContactData {
     {
         return this.number;
     }
+
     public String getOid() {return this.Oid;}
+
+    public Bitmap getBitmap() {return this.img_bit;}
 
     public String getNumber_raw()
     {
