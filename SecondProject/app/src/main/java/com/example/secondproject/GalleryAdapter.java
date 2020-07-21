@@ -2,23 +2,20 @@ package com.example.secondproject;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 
-public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHolder> {
+public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHolder> implements Serializable
+
+        {
 
     private ArrayList<GalleryData> myDataList;
     private ArrayList<GalleryData> filteredList;
@@ -57,39 +54,62 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
         return filteredList.size();
     }
 
+    public GalleryData getItem(int position){
+        return filteredList.get(position);
+    }
+
+    public interface OnItemClickListner {
+        void onItemClick(View v, int pos);
+    }
+
+    private OnItemClickListner galleryListener = null;
+
+    public void setOnItemClickListner(OnItemClickListner listner) {
+        this.galleryListener = listner;
+    }
+
+    public interface OnItemClickListener {
+        void onItemCLick(View v, int position) ;
+    }
+
+
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView GalleryItemView;
-
+/*
         ViewHolder(View itemView) {
             super(itemView);
 
             GalleryItemView = itemView.findViewById(R.id.Gallery_item);
 
-            //delete_contact = itemView.findViewById(R.id.contact_delete);
             final AlertDialog.Builder builder = new AlertDialog.Builder(itemView.getContext());
-/*
-            delete_contact.setOnClickListener(new View.OnClickListener() {
-                public void onClick(final View view) {
-                    final int pos = getAdapterPosition();
-                    builder.setMessage("Are you sure you want to delete this contact?").setTitle("DELETE")
-                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    deleteContact(view, pos);
-                                }
-                            })
-                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    dialogInterface.cancel();
-                                }
-                            });
-                    AlertDialog alert = builder.create();
-                    alert.show();
+        }
+*/
+        ViewHolder(View itemView)
+        {
+            super(itemView);
+
+            GalleryItemView = itemView.findViewById(R.id.Gallery_item);
+
+            itemView.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    int pos = getAdapterPosition();
+                    if (pos != RecyclerView.NO_POSITION)
+                    {
+                        // 리스너 객체의 메서드 호출
+                        notifyItemChanged(pos) ;
+                        if (galleryListener != null){
+                            galleryListener.onItemClick(v,pos);
+                        }
+
+                    }
                 }
             });
-            */
+
+
         }
     }
 }
