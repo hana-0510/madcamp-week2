@@ -15,6 +15,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -48,6 +49,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -60,7 +62,9 @@ import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class fragment_2 extends Fragment {
+public class fragment_2 extends Fragment implements Serializable
+
+{
 
     Button Upload_Btn;
     ProgressDialog progressDialog ;
@@ -72,7 +76,8 @@ public class fragment_2 extends Fragment {
     private RecyclerView mRecyclerView;
     private GridLayoutManager mLayoutManager;
     private GalleryAdapter mAdapter;
-    private ArrayList<GalleryData> mGalleryData;
+    public ArrayList<GalleryData> mGalleryData;
+    public ArrayList<Bitmap> mBitmapData;
 
     private static final int REQUEST_ADDIMG = 0;
 
@@ -93,7 +98,9 @@ public class fragment_2 extends Fragment {
 
 
     @Override
-    public void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState); }
+    public void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState);
+        //mGalleryData = new ArrayList<GalleryData>();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -112,8 +119,28 @@ public class fragment_2 extends Fragment {
                 }
             });
             mRecyclerView = (RecyclerView) view.findViewById(R.id.Gallery_View);
+            mRecyclerView.setItemAnimator(new DefaultItemAnimator());
             getGallery();
         }
+/*
+        mAdapter = new GalleryAdapter(mGalleryData);
+        mRecyclerView.setAdapter(mAdapter);
+
+        mAdapter.setOnItemClickListner(new GalleryAdapter.OnItemClickListner() {
+            @Override
+            public void onItemClick(View v, int pos) {
+                GalleryData item = mAdapter.getItem(pos);
+                Toast.makeText(getActivity(), "click", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(getActivity(), Image_Clicked.class);
+                intent.putExtra("img_num",pos);
+                intent.putExtra("Oid", item.getOid());
+                intent.putExtra("Bitmap", item.getBitmap());
+
+                startActivity(intent);
+            }
+        }
+        );
+*/
         return view;
     }
 
@@ -226,23 +253,6 @@ public class fragment_2 extends Fragment {
                     byte[] encodeByte = Base64.decode(bit_st, Base64.DEFAULT);
                     Bitmap bitmap_r = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
                     //IDProf.setImageBitmap(bitmap_r);
-                    /*
-                    for(int i=0; i<jsonArray.length(); i++){
-                        JSONObject jo = jsonArray.getJSONObject(i);
-                        Log.d("d", "log"+jo.toString());
-                        String id = jo.getString("Oid");
-                        String name= jo.getString("name");
-                        String number= jo.getString("phone_no");
-                        mMyData.add(new ContactData(name,  number, id));
-//                        Log.d("d", "log"+mMyData.toString());
-                    }
-
-                    when_nothing.setVisibility(View.GONE);
-                    mLayoutManager = new LinearLayoutManager(getActivity());
-                    mRecyclerView.setLayoutManager(mLayoutManager);
-                    mAdapter = new ContactAdapter(mMyData);
-                    mRecyclerView.setAdapter(mAdapter);
-                    */
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -278,13 +288,13 @@ public class fragment_2 extends Fragment {
             @Override
             protected void onPostExecute(final String s) {
                 mGalleryData = new ArrayList<GalleryData>();
+                mBitmapData = new ArrayList<Bitmap>();
                 super.onPostExecute(s);
                 try {
 
                     JSONArray jsonArray = new JSONArray(s);
                     if (jsonArray.length()==0){
-                        //when_nothing.setVisibility(View.VISIBLE);
-                        Toast.makeText(getContext(), "Some error occurred", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getContext(), "Some error occurred", Toast.LENGTH_SHORT).show();
                     }
 
                     for(int i=0; i<jsonArray.length(); i++){
@@ -295,7 +305,9 @@ public class fragment_2 extends Fragment {
                         byte[] encodeByte = Base64.decode(content, Base64.DEFAULT);
                         Bitmap bitmap_r = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
                         mGalleryData.add(new GalleryData(bitmap_r, Oid));
+                        //mBitmapData.add(bitmap_r);
                     }
+
 
                     if (jsonArray.length()!=0) {
                         //when_nothing.setVisibility(View.GONE);
@@ -304,12 +316,23 @@ public class fragment_2 extends Fragment {
                         mRecyclerView.setLayoutManager(mLayoutManager);
                         mAdapter = new GalleryAdapter(mGalleryData);
                         mRecyclerView.setAdapter(mAdapter);
-                        /*
-                        GridView.setLayoutManager(mLayoutManager);
-                        mRecyclerView.setHasFixedSize(true);
-                        mAdapter = new ContactAdapter(mMyData);
-                        mRecyclerView.setAdapter(mAdapter);
-                         */
+
+                        mAdapter.setOnItemClickListner(new GalleryAdapter.OnItemClickListner() {
+                                                           @Override
+                                                           public void onItemClick(View v, int pos) {
+                                                               GalleryData item = mAdapter.getItem(pos);
+                                                               Toast.makeText(getActivity(), "click", Toast.LENGTH_LONG).show();
+                                                               Intent intent = new Intent(getActivity(), Image_Clicked.class);
+                                                               Bundle b = new Bundle();
+                                                               intent.putExtra("key", b);
+                                                               intent.putExtra("img_num",pos);
+                                                               intent.putExtra("Oid", item.getOid());
+                                                               //intent.putParcelableArrayListExtra("DataList", (mBitmapData));
+                                                               startActivity(intent);
+                                                           }
+                                                       }
+                        );
+
                     }
 
                 } catch (JSONException e) {

@@ -76,12 +76,9 @@ public class add_contact extends AppCompatActivity {
                 HashMap<String, String> params = new HashMap<>();
                 User user = SharedPrefManager.getInstance(getApplicationContext()).getUser();
                 params.put("id", user.getEmail());
-//                Log.d("d", "log"+user.getEmail());
                 params.put("password", user.getPassword());
-//                Log.d("d", "log"+user.getPassword());
                 params.put("name", nameString);
                 params.put("phone_no", numString);
-//                Log.d("d", "log"+numString);
 
                 //returing the response
                 return requestHandler.sendPostRequest(URLs.URL_ADD_CONTACT, params);
@@ -99,32 +96,11 @@ public class add_contact extends AppCompatActivity {
             @Override
             protected void onPostExecute(final String s) {
                 super.onPostExecute(s);
-//                progressDialog.dismiss();
-//                try {
-//                    //converting response to json object
-//                    JSONObject obj = new JSONObject(s);
-//                    //if no error in response
-////                    if (!obj.getBoolean("error")) {
-//                    //getting the user from the response
-////                        JSONObject userJson = obj.getJSONObject("user");
-//                    //creating a new user object
-//                    if(obj.getInt("result")==1) {
-//                        onContactAddSuccess();
-//                    } else { onContactAddFailed(); }
-//                    //storing the user in shared preferences
-//                    progressDialog.dismiss();
-////                    } else {
-////                        Toast.makeText(getApplicationContext(), "Some error occurred", Toast.LENGTH_SHORT).show();
-////                    }
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
                 int a = s.indexOf("result");
                 final String result = s.substring(a+8, a+9);
                 new android.os.Handler().postDelayed(
                     new Runnable() {
                         public void run() {
-                        // On complete call either onLoginSuccess or onLoginFailed
                         if (result.equals("1")) {
                             onContactAddSuccess();
                         }else { onContactAddFailed(); }
@@ -142,7 +118,6 @@ public class add_contact extends AppCompatActivity {
         add_to_server.setEnabled(true);
         Toast.makeText(getBaseContext(), "Contact Added Successfully", Toast.LENGTH_LONG).show();
         setResult(Activity.RESULT_OK, new Intent());
-//        fragment_1.getContacts();
         finish();
     }
 

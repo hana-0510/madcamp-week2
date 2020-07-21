@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +49,8 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder> {
         int savedday = filteredList.get(position).getDay();
         viewHolder.text_dueDate.setText(savedmonth+" / "+savedday);
         Calendar calendar = Calendar.getInstance();
-        int month = calendar.get(Calendar.MONTH);
+        int month = (calendar.get(Calendar.MONTH)+1);
+        Log.d("month", "log month"+month);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
         if (savedmonth<month) {
             viewHolder.background.setBackgroundColor(viewHolder.itemView.getResources().getColor(R.color.red));
@@ -81,7 +83,7 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder> {
             done_button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(final View view) {
                     final int pos = getAdapterPosition();
-                    builder.setMessage("Are you sure you want to delete this contact?").setTitle("DELETE")
+                    builder.setMessage("Did you complete this task?").setTitle("Task complete")
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {

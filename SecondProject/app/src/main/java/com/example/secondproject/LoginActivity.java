@@ -105,25 +105,12 @@ public class LoginActivity extends AppCompatActivity {
                 try {
                     //converting response to json object
                     JSONObject obj = new JSONObject(s);
-                    //if no error in response
-//                    if (!obj.getBoolean("error")) {
-                    //getting the user from the response
-//                        JSONObject userJson = obj.getJSONObject("user");
-                    //creating a new user object
-                    User user = new User(
-                            obj.getString("username"),
-                            obj.getString("id"),
-                            obj.getString("password")
-                    );
+                    User user = new User(obj.getString("username"), obj.getString("id"), obj.getString("password"));
                     if(obj.getInt("result")==1) {
                         onLoginSuccess();
                     } else { onLoginFailed(); }
-                    //storing the user in shared preferences
                     SharedPrefManager.getInstance(getApplicationContext()).userLogin(user);
                     progressDialog.dismiss();
-//                    } else {
-//                        Toast.makeText(getApplicationContext(), "Some error occurred", Toast.LENGTH_SHORT).show();
-//                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -134,15 +121,15 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_SIGNUP) {
-            if (resultCode == RESULT_OK) {
-                this.finish();
-            }
-        }
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == REQUEST_SIGNUP) {
+//            if (resultCode == RESULT_OK) {
+//                this.finish();
+//            }
+//        }
+//    }
 
     @Override
     public void onBackPressed() {

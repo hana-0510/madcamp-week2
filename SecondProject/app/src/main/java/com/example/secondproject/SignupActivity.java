@@ -60,8 +60,6 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     public void signup() {
-        Log.d(TAG, "Signup");
-
         if (!validate()) {
             return;
         }
@@ -74,7 +72,6 @@ public class SignupActivity extends AppCompatActivity {
 
         // TODO: Implement your own signup logic here.
         class RegisterUser extends AsyncTask<Void, Void, String> {
-
 
             private ProgressBar progressBar;
 

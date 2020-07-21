@@ -3,6 +3,7 @@ package com.example.secondproject;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,7 +44,6 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 //        viewHolder.imageView.setImageResource(filteredList.get(position).getImage());
         viewHolder.name.setText(filteredList.get(position).getName());
         viewHolder.number.setText(filteredList.get(position).getNumber());
-//        viewHolder.itemView.setOnClickListener(fil);
     }
 
     @Override
@@ -51,20 +51,6 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         //Adapter가 관리하는 전체 데이터 개수 반환
         return filteredList.size();
     }
-
-    //    public ContactData getItem(int position){
-//        return filteredList.get(position);
-//    }
-//
-//    public interface OnItemClickListener {
-//        void onItemClick(View v, int pos);
-//    }
-//    private OnItemClickListener contactListener = null;
-
-//    public void OnItemClickListener(OnItemClickListener listner) {
-//        this.contactListener = listner;
-//    }
-//
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
@@ -119,8 +105,20 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 //                }
 //            });
             });
-        }
 
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int pos = getAdapterPosition();
+                    if(pos != RecyclerView.NO_POSITION){
+                        Intent intent = new Intent(view.getContext(), ItemActivity.class);
+                        intent.putExtra("name", myDataList.get(pos).getName());
+                        intent.putExtra("number", myDataList.get(pos).getNumber());
+                        view.getContext().startActivity(intent);
+                    }
+                }
+            });
+        }
 
         private void deleteContact(final View view, final int pos) {
             class DeleteContact extends AsyncTask<Void, Void, String> {
@@ -150,7 +148,6 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                 @Override
                 protected void onPostExecute(final String s) {
                     super.onPostExecute(s);
-
                     int a = s.indexOf("result");
                     final String result = s.substring(a + 8, a + 9);
                     if (result.equals("1")) {
@@ -165,43 +162,5 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
             DeleteContact dc = new DeleteContact();
             dc.execute();
         }
-
-
-//    //@Override
-//    public Filter getFilter() {
-//        return new Filter() {
-//            @Override
-//            protected FilterResults performFiltering(CharSequence constraint) {
-//                String charString = constraint.toString();
-//                if(charString.isEmpty()) {
-//                    filteredList = myDataList;
-//                } else {
-//                    ArrayList<ContactData> filteringList = new ArrayList<>();
-//                    for(ContactData name : myDataList) {
-//                        if(name.getName().toLowerCase().contains(charString.toLowerCase())) {
-//                            filteringList.add(name);
-//                        }
-//                        else if(name.getNumber().toLowerCase().contains(charString.toLowerCase())) {
-//                            filteringList.add(name);
-//                        }
-//                        else if(name.getNumber_raw().toLowerCase().contains(charString.toLowerCase())) {
-//                            filteringList.add(name);
-//                        }
-//                    }
-//                    filteredList = filteringList;
-//                }
-//                FilterResults filterResults = new FilterResults();
-//                filterResults.values = filteredList;
-//                return filterResults;
-//            }
-//
-//            @Override
-//            protected void publishResults(CharSequence constraint, FilterResults results) {
-//                filteredList = (ArrayList<ContactData>)results.values;
-//                notifyDataSetChanged();
-//            }
-//        };
-//    }
-
     }
 }

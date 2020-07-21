@@ -110,7 +110,6 @@ public class RequestHandler {
             System.setProperty("http.proxyHost", "proxy.example.com");
             System.setProperty("http.proxyPort", "8080");
             url = new URL(requestURL);
-//            Log.d("d", "log5");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(15000);
             conn.setConnectTimeout(15000);
@@ -175,7 +174,6 @@ public class RequestHandler {
     private String getPostFile(HashMap<String, String> params) throws UnsupportedEncodingException {
 
         for(Map.Entry<String,String> map_entry : params.entrySet()){
-
 
             stringBuilder.append("--" + boundary + "\r\n");
             stringBuilder.append("Content-Disposition: form-data; name=\""+ map_entry.getKey() + "\"\r\n\r\n");

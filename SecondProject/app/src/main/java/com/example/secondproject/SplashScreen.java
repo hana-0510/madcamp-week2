@@ -21,16 +21,14 @@ import java.util.List;
 public class SplashScreen extends AppCompatActivity {
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
     private static final String[] REQUIRED_SDK_PERMISSIONS = new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CALL_PHONE, Manifest.permission.CAMERA,
-            Manifest.permission.READ_CONTACTS, Manifest.permission.READ_PHONE_NUMBERS};
+            Manifest.permission.READ_CONTACTS, Manifest.permission.READ_PHONE_NUMBERS, Manifest.permission.INTERNET};
     private int    timeoutMillis       = 5000;
     private long                startTimeMillis     = 0;
     private static final int    PERMISSIONS_REQUEST = 1234;
     public int getTimeoutMillis() { return timeoutMillis; }
 
     @SuppressWarnings("rawtypes")
-    public Class getNextActivityClass() {
-        return LoginActivity.class;
-    };
+    public Class getNextActivityClass() { return LoginActivity.class; };
 
 
     @Override

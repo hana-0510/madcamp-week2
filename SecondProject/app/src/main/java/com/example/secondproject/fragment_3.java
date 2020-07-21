@@ -45,6 +45,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 
+
 import static java.lang.Integer.parseInt;
 
 //implements DatePickerDialog.OnDateSetListener
@@ -111,8 +112,8 @@ public class fragment_3 extends Fragment {
                         datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePicker datePicker, int tyear, int tmonth, int tday) {
-                                saveday+=tday;
-                                savemonth+=(tmonth+1);
+                                saveday=Integer.toString(tday);
+                                savemonth=Integer.toString(tmonth+1);
                                 Log.d("d", "log "+savemonth+"/"+saveday);
                                 addTODOToServer();
                             }
@@ -167,6 +168,7 @@ public class fragment_3 extends Fragment {
                 // On complete call either onLoginSuccess or onLoginFailed
                 if (result.equals("1")) {
                     Toast.makeText(getContext(), "Todo added successfully", Toast.LENGTH_SHORT).show();
+                    getTODOS();
                 }else { Toast.makeText(getContext(), "Failed to add Todo", Toast.LENGTH_SHORT).show(); }
                 progressDialog.dismiss();
 
@@ -220,8 +222,21 @@ public class fragment_3 extends Fragment {
                         String id = jo.getString("Oid");
 
                         mMyData.add(new ToDos(dowhat, parseInt(month), parseInt(day), id));
-                    }
 
+                        Collections.sort(mMyData, new Comparator<ToDos>() {
+                            @Override
+                            public int compare(ToDos a, ToDos b) {
+                                if (a.getMonth()<b.getMonth()){
+                                    return -1;
+                                } else if (a.getMonth()==b.getMonth()) {
+                                    if (a.getDay()<b.getDay()){
+                                        return -1;
+                                    } else if (a.getDay()==b.getDay()) {return 0;}
+                                }
+                                return 1;
+                            }
+                        });
+                    }
 
                     if (jsonArray.length()!=0) {
                         when_nothing.setVisibility(View.GONE);
@@ -231,7 +246,6 @@ public class fragment_3 extends Fragment {
                         mAdapter = new ToDoAdapter(mMyData);
                         mRecyclerView.setAdapter(mAdapter);
                     }
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
