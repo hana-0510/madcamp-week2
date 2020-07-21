@@ -312,31 +312,26 @@ public class fragment_2 extends Fragment implements Serializable
 
 
                     if (jsonArray.length()!=0) {
-                        //when_nothing.setVisibility(View.GONE);
                         mLayoutManager = new GridLayoutManager(getActivity(),3);
-                        //mRecyclerView.setHasFixedSize(true);
                         mRecyclerView.setLayoutManager(mLayoutManager);
                         mAdapter = new GalleryAdapter(mGalleryData);
                         mRecyclerView.setAdapter(mAdapter);
 
                         mAdapter.setOnItemClickListner(new GalleryAdapter.OnItemClickListner() {
-                                                           @Override
-                                                           public void onItemClick(View v, int pos) {
-                                                               GalleryData item = mAdapter.getItem(pos);
-                                                               Toast.makeText(getActivity(), "click", Toast.LENGTH_LONG).show();
-                                                               Intent intent = new Intent(getActivity(), Image_Clicked.class);
-                                                               Bundle b = new Bundle();
-                                                               intent.putExtra("key", b);
-                                                               intent.putExtra("img_num",pos);
-                                                               intent.putExtra("Oid", item.getOid());
-                                                               //intent.putParcelableArrayListExtra("DataList", (mBitmapData));
-                                                               startActivity(intent);
-                                                           }
-                                                       }
+                               @Override
+                               public void onItemClick(View v, int pos) {
+                                   GalleryData item = mAdapter.getItem(pos);
+                                   Toast.makeText(getActivity(), "click", Toast.LENGTH_LONG).show();
+                                   Intent intent = new Intent(getActivity(), Image_Clicked.class);
+                                   Bundle b = new Bundle();
+                                   intent.putExtra("key", b);
+                                   intent.putExtra("img_num",pos);
+                                   intent.putExtra("Oid", item.getOid());
+                                   startActivity(intent);
+                               }
+                           }
                         );
-
                     }
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -345,6 +340,4 @@ public class fragment_2 extends Fragment implements Serializable
         GetAllImage gai = new GetAllImage();
         gai.execute();
     }
-
-
 }
