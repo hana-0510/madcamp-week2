@@ -20,10 +20,20 @@ public class ToDos {
         return month;
     }
 
-    public int getDay() {
-        return day;
-    }
+    public int getDay() { return day; }
 
     public String getOid() {return this.Oid;}
+
+    public void setMonth(int tmonth) {
+        this.month = tmonth;
+    }
+
+    public void setDay(int tday) { this.day = tday; }
+
+    public void setTodo(String todo) {
+        this.todo = todo;
+    }
+
+
 
 }

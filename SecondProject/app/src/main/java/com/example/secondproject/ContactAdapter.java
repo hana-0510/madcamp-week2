@@ -20,7 +20,7 @@ import java.util.HashMap;
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHolder> {
 
     private ArrayList<ContactData> myDataList;
-    private ArrayList<ContactData> filteredList;
+    public static ArrayList<ContactData> filteredList;
 
     ContactAdapter(ArrayList<ContactData> dataList) {
         this.myDataList = dataList;
@@ -114,8 +114,11 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                         Intent intent = new Intent(view.getContext(), ItemActivity.class);
                         intent.putExtra("name", myDataList.get(pos).getName());
                         intent.putExtra("number", myDataList.get(pos).getNumber());
+                        intent.putExtra("Oid", myDataList.get(pos).getOid());
+                        intent.putExtra("pos", pos);
                         view.getContext().startActivity(intent);
                     }
+                    notifyItemChanged(pos);
                 }
             });
         }
@@ -163,4 +166,5 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
             dc.execute();
         }
     }
+
 }
