@@ -1,13 +1,10 @@
 package com.example.secondproject;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,10 +14,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.w3c.dom.Text;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Base64;
+import java.util.Base64.Encoder;
 import java.util.HashMap;
 
 public class add_contact extends AppCompatActivity {
@@ -62,6 +61,8 @@ public class add_contact extends AppCompatActivity {
 
         final String nameString = name.getText().toString();
         final String numString = phone_num.getText().toString();
+
+
 
         class ContactInformation extends AsyncTask<Void, Void, String> {
 
